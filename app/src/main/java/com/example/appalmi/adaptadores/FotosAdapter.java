@@ -38,16 +38,19 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
     public void onBindViewHolder(@NonNull FotoViewHolder holder, int position) {
         Foto foto = fotos.get(position);
 
-        // TODO 1: Poner el texto de la foto
         holder.tvTexto.setText(foto.getTexto());
 
-        // TODO 2: Cargar la imagen con Glide.
-         Glide.with(holder.itemView.getContext())
-             .load(foto.getImagenResId())
-             .into(holder.ivFoto);
-
-        // TODO 3: Detectar el click en la celda para:
-
+        if (foto.getUrlImagen() != null) {
+            // Carga desde Internet si hay URL
+            Glide.with(holder.itemView.getContext())
+                 .load(foto.getUrlImagen())
+                 .into(holder.ivFoto);
+        } else {
+            // Carga local si no hay URL
+            Glide.with(holder.itemView.getContext())
+                 .load(foto.getImagenResId())
+                 .into(holder.ivFoto);
+        }
 
          holder.itemView.setOnClickListener(new View.OnClickListener() {
              @Override
@@ -67,7 +70,11 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
         View vista = LayoutInflater.from(contexto).inflate(R.layout.dialog_foto, null);
 
      ImageView ivFotoDialog = vista.findViewById(R.id.ivFotoDialog);
-        Glide.with(contexto).load(foto.getImagenResId()).into(ivFotoDialog);
+        if (foto.getUrlImagen() != null) {
+            Glide.with(contexto).load(foto.getUrlImagen()).into(ivFotoDialog);
+        } else {
+            Glide.with(contexto).load(foto.getImagenResId()).into(ivFotoDialog);
+        }
 
         Dialog dialogo = new Dialog(contexto);
        dialogo.setContentView(vista);
@@ -76,7 +83,6 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
          }
          dialogo.show();
 
-         // Detectar el click DENTRO del dialog para cerrarlo (pide la rúbrica: 1 punto)
          vista.setOnClickListener(v -> dialogo.dismiss());
      }
 

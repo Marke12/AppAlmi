@@ -35,20 +35,17 @@ public class FragmentInterior extends Fragment {
 
         rvFotos = view.findViewById(R.id.rvFotos);
 
-        // TODO 1: Fijar un GridLayoutManager con 3 columnas (como en el enunciado)
-        // rvFotos.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
-        // TODO 2: Rellenar la lista de fotos del INTERIOR de Almi.
-        // Puedes usar el logo de momento (@drawable/logo_almi) y luego cambiarlo
-        // por fotos reales que metas en res/drawable.
+         rvFotos.setLayoutManager(new GridLayoutManager(requireContext(), 3));
         List<Foto> fotos = new ArrayList<>();
-        // Ejemplo (descomenta y añade tantas como necesites):
-        // fotos.add(new Foto(R.drawable.logo_almi, "Texto 1"));
-        // fotos.add(new Foto(R.drawable.logo_almi, "Texto 2"));
-        // fotos.add(new Foto(R.drawable.logo_almi, "Texto 3"));
 
-        // TODO 3: Crear el adaptador y asignarlo al RecyclerView
-        // FotosAdapter adapter = new FotosAdapter(fotos);
-        // rvFotos.setAdapter(adapter);
+         fotos.add(new Foto("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600", "Entrada principal"));
+         fotos.add(new Foto("https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600", "Aulas"));
+         fotos.add(new Foto("https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600", "Profesores"));
+         
+         fotos.add(new Foto(R.drawable.almi_logo, "Logo Almi"));
+
+         FotosAdapter adapter = new FotosAdapter(fotos);
+         rvFotos.setAdapter(adapter);
     }
 }

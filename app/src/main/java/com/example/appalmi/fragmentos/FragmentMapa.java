@@ -29,7 +29,6 @@ public class FragmentMapa extends Fragment {
         
         Context ctx = requireActivity().getApplicationContext();
         Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE));
-        // OpenStreetMap es cada vez más estricto. A veces el User Agent por defecto falla.
         Configuration.getInstance().setUserAgentValue("AppAlmi2/1.0");
         
         return inflater.inflate(R.layout.fragment_mapa, container, false);
@@ -42,8 +41,6 @@ public class FragmentMapa extends Fragment {
         mapa = view.findViewById(R.id.mapaFragment);
         
         if (mapa != null) {
-            // El servidor de OpenStreetMap por defecto suele bloquear si no le gusta el User-Agent.
-            // Los servidores de ESRI no suelen tener ese problema. Vamos a usar la misma fuente que tu compañero:
             org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase esriCalles = new org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase(
                     "EsriCalles", 0, 19, 256, ".png",
                     new String[]{"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/"},
@@ -61,13 +58,11 @@ public class FragmentMapa extends Fragment {
             mapa.setTileSource(esriCalles);
             mapa.setMultiTouchControls(true);
 
-            // Coordenadas indicadas: 43.271461, -2.948372
             GeoPoint almiPoint = new GeoPoint(43.271461, -2.948372);
             
             mapa.getController().setZoom(19.0);
             mapa.getController().setCenter(almiPoint);
 
-            // Añadir un marcador en el punto de Almi
             Marker markerAlmi = new Marker(mapa);
             markerAlmi.setPosition(almiPoint);
             markerAlmi.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);

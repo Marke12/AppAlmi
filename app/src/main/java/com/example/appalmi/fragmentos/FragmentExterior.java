@@ -35,17 +35,15 @@ public class FragmentExterior extends Fragment {
 
         rvFotos = view.findViewById(R.id.rvFotos);
 
-        // TODO 1: Fijar un GridLayoutManager con 3 columnas (igual que en FragmentInterior)
-        // rvFotos.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+        rvFotos.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
-        // TODO 2: Rellenar la lista de fotos del EXTERIOR de Almi (mismo patrón que Interior)
         List<Foto> fotos = new ArrayList<>();
-        // fotos.add(new Foto(R.drawable.logo_almi, "Texto 1"));
-        // fotos.add(new Foto(R.drawable.logo_almi, "Texto 2"));
-        // fotos.add(new Foto(R.drawable.logo_almi, "Texto 3"));
+        
+        fotos.add(new Foto("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600", "Fachada"));
+        fotos.add(new Foto("https://images.unsplash.com/photo-1562774053-701939374585?w=600", "Campus Exterior"));
+        fotos.add(new Foto("https://images.unsplash.com/photo-1541829070764-84a5004ca03a?w=600", "Patio"));
 
-        // TODO 3: Crear el adaptador y asignarlo al RecyclerView
-        // FotosAdapter adapter = new FotosAdapter(fotos);
-        // rvFotos.setAdapter(adapter);
+        FotosAdapter adapter = new FotosAdapter(fotos);
+        rvFotos.setAdapter(adapter);
     }
 }
