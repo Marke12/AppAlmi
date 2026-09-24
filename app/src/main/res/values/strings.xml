@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">App Almi</string>
+    <string name="abrir_menu">Abrir menú</string>
+    <string name="cerrar_menu">Cerrar menú</string>
+    <string name="logo_almi">Logo de Almi</string>
+
+    <string-array name="cursos">
+        <item>DAM 1</item>
+        <item>DAM 2</item>
+        <item>SMR 1</item>
+        <item>SMR 2</item>
+        <item>GA 1</item>
+        <item>GA 2</item>
+    </string-array>
+</resources>
