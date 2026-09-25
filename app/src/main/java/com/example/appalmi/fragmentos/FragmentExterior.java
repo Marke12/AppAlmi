@@ -39,9 +39,9 @@ public class FragmentExterior extends Fragment {
 
         List<Foto> fotos = new ArrayList<>();
         
-        fotos.add(new Foto("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600", "Fachada"));
-        fotos.add(new Foto("https://images.unsplash.com/photo-1562774053-701939374585?w=600", "Campus Exterior"));
-        fotos.add(new Foto("https://images.unsplash.com/photo-1541829070764-84a5004ca03a?w=600", "Patio"));
+        fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnWGJYj4Ob4HJJwTI2zsyL7x9cXq-5c0z1o1chlDhywA&s=10", "Fachada"));
+        fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd6VxATDIWk6si0xi92AEZ90ycofiTZnASEqZlYmM61Q&s=10", "Llegada metro"));
+        fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToVnOx59zExrrPIpn0CdXD-DmVMrucxrN-uh0VcQV6EA&s=10", "Salida metro "));
 
         FotosAdapter adapter = new FotosAdapter(fotos);
         rvFotos.setAdapter(adapter);

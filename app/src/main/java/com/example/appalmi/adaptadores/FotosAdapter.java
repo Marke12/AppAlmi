@@ -41,23 +41,18 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
         holder.tvTexto.setText(foto.getTexto());
 
         if (foto.getUrlImagen() != null) {
-            // Carga desde Internet si hay URL
             Glide.with(holder.itemView.getContext())
                  .load(foto.getUrlImagen())
                  .into(holder.ivFoto);
         } else {
-            // Carga local si no hay URL
             Glide.with(holder.itemView.getContext())
                  .load(foto.getImagenResId())
                  .into(holder.ivFoto);
         }
 
-         holder.itemView.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 Toast.makeText(v.getContext(), foto.getTexto(), Toast.LENGTH_SHORT).show();
-                 mostrarDialogFoto(v.getContext(), foto);
-             }
+         holder.itemView.setOnClickListener(v -> {
+             Toast.makeText(v.getContext(), foto.getTexto(), Toast.LENGTH_SHORT).show();
+             mostrarDialogFoto(v.getContext(), foto);
          });
     }
 
@@ -69,7 +64,7 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
     private void mostrarDialogFoto(Context contexto, Foto foto) {
         View vista = LayoutInflater.from(contexto).inflate(R.layout.dialog_foto, null);
 
-     ImageView ivFotoDialog = vista.findViewById(R.id.ivFotoDialog);
+        ImageView ivFotoDialog = vista.findViewById(R.id.ivFotoDialog);
         if (foto.getUrlImagen() != null) {
             Glide.with(contexto).load(foto.getUrlImagen()).into(ivFotoDialog);
         } else {
@@ -77,16 +72,14 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
         }
 
         Dialog dialogo = new Dialog(contexto);
-       dialogo.setContentView(vista);
-         if (dialogo.getWindow() != null) {
-             dialogo.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-         }
-         dialogo.show();
+        dialogo.setContentView(vista);
+        if (dialogo.getWindow() != null) {
+            dialogo.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        }
+        dialogo.show();
 
-         vista.setOnClickListener(v -> dialogo.dismiss());
+        vista.setOnClickListener(v -> dialogo.dismiss());
      }
-
-
 
     static class FotoViewHolder extends RecyclerView.ViewHolder {
         ImageView ivFoto;

@@ -37,14 +37,17 @@ public class FragmentInterior extends Fragment {
 
 
          rvFotos.setLayoutManager(new GridLayoutManager(requireContext(), 3));
-        List<Foto> fotos = new ArrayList<>();
 
-         fotos.add(new Foto("https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600", "Entrada principal"));
-         fotos.add(new Foto("https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600", "Aulas"));
-         fotos.add(new Foto("https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600", "Profesores"));
-         
+
+         //CARGAR FOTOS DE INTERNET
+         List<Foto> fotos = new ArrayList<>();
+
+         fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6oH3mEKl9xkM4sj0xj_mNKzjDurWj60AXahw-egYWcw&s=10", "Secretaria"));
+         fotos.add(new Foto("https://almi.eus/wp-content/uploads/2016/09/06-Aula-Ordenadores-1024x576.jpg", "Aulas"));
+         fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-HBM3mGx8GRabGIhAgYjqrYubz4GMiTlN-N8oHwEHjg&s=10", "Profesor GOAT"));
+         fotos.add(new Foto("https://almi.eus/wp-content/uploads/2016/09/11Trabajos-en-grupo-1024x576.jpg", "Alumnos en clase"));
+         //CARGAR FOTOS LOCALES
          fotos.add(new Foto(R.drawable.almi_logo, "Logo Almi"));
-
          FotosAdapter adapter = new FotosAdapter(fotos);
          rvFotos.setAdapter(adapter);
     }
