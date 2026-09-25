@@ -15,6 +15,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppAlmi">
+
+        <!-- AQUI TIENES QUE PEGAR TU API KEY DE GOOGLE CLOUD -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDxoWthvyCUU7Rpxu8_rVHuCmxA3G_nt8U" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
