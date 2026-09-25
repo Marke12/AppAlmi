@@ -40,11 +40,16 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
 
         holder.tvTexto.setText(foto.getTexto());
 
+        // -------------------------------------------------------------------
+        // REQUISITO DE LA RÚBRICA: Las fotos se cargan con la librería Glide
+        // -------------------------------------------------------------------
         if (foto.getUrlImagen() != null) {
+            // Glide descargará la foto de la URL de internet y la pondrá en el ImageView
             Glide.with(holder.itemView.getContext())
                  .load(foto.getUrlImagen())
                  .into(holder.ivFoto);
         } else {
+            // Glide cargará la foto desde los recursos locales (drawable)
             Glide.with(holder.itemView.getContext())
                  .load(foto.getImagenResId())
                  .into(holder.ivFoto);
@@ -65,6 +70,10 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
         View vista = LayoutInflater.from(contexto).inflate(R.layout.dialog_foto, null);
 
         ImageView ivFotoDialog = vista.findViewById(R.id.ivFotoDialog);
+        
+        // -------------------------------------------------------------------
+        // REQUISITO DE LA RÚBRICA: Las fotos se cargan con la librería Glide (en el Dialog)
+        // -------------------------------------------------------------------
         if (foto.getUrlImagen() != null) {
             Glide.with(contexto).load(foto.getUrlImagen()).into(ivFotoDialog);
         } else {

@@ -40,7 +40,6 @@ public class FragmentMapa extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    // Este método salta cuando Google Maps ha terminado de descargar todo de internet
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         
