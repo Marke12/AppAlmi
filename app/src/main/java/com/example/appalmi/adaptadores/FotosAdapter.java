@@ -59,6 +59,26 @@ public class FotosAdapter extends RecyclerView.Adapter<FotosAdapter.FotoViewHold
              Toast.makeText(v.getContext(), foto.getTexto(), Toast.LENGTH_SHORT).show();
              mostrarDialogFoto(v.getContext(), foto);
          });
+
+         // Borrar la foto al mantenerla pulsada (Clic Largo)
+         holder.itemView.setOnLongClickListener(v -> {
+             new android.app.AlertDialog.Builder(v.getContext())
+                     .setTitle("Borrar foto")
+                     .setMessage("¿Estás seguro de que quieres borrar la foto '" + foto.getTexto() + "'?")
+                     .setPositiveButton("Sí", (dialog, which) -> {
+                         // 1. Borrar la foto de la lista de datos
+                         fotos.remove(position);
+                         
+                         // 2. Avisar al adaptador para que actualice la cuadrícula en la pantalla
+                         notifyItemRemoved(position);
+                         notifyItemRangeChanged(position, fotos.size());
+                         
+                         Toast.makeText(v.getContext(), "Foto borrada", Toast.LENGTH_SHORT).show();
+                     })
+                     .setNegativeButton("Cancelar", null)
+                     .show();
+             return true; 
+         });
     }
 
     @Override

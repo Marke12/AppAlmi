@@ -4,6 +4,9 @@
     <string name="abrir_menu">Abrir menú</string>
     <string name="cerrar_menu">Cerrar menú</string>
     <string name="logo_almi">Logo de Almi</string>
+    <string name="inicio">Inicio</string>
+    <string name="mapa">Mapa</string>
+    <string name="galeria">Galería</string>
 
     <string-array name="cursos">
         <item>DAM 1</item>

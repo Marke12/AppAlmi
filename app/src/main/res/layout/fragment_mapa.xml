@@ -4,6 +4,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!-- Buscador añadido para cambiar el sitio -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/btnVozMapa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voz" />
+
+        <EditText
+            android:id="@+id/etBusquedaMapa"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Buscar ciudad o lugar..."
+            android:inputType="text" />
+
+        <Button
+            android:id="@+id/btnBuscarMapa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buscar" />
+    </LinearLayout>
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/mvMapa"
         android:name="com.google.android.gms.maps.SupportMapFragment"

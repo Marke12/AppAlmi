@@ -4,7 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
 
+    <!-- PERMISOS DE EXAMEN (Sensores) -->
+    <uses-feature android:name="android.hardware.sensor.proximity" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -16,20 +19,45 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppAlmi">
 
+        <!-- FileProvider para la Cámara (MANDATORIO para poder abrir la cámara) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- AQUI TIENES QUE PEGAR TU API KEY DE GOOGLE CLOUD -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDxoWthvyCUU7Rpxu8_rVHuCmxA3G_nt8U" />
 
+        <!-- La pantalla de bienvenida de la APP (Launcher) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <!-- El interior de la APP -->
+        <activity
+            android:name=".CentralActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
+
+        <!-- Actividad de Registro -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize">
         </activity>
     </application>
 
