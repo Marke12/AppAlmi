@@ -50,21 +50,7 @@ public class FragmentInicio extends Fragment {
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, listaCursos);
         lvCursos.setAdapter(adapter);
 
-        // -------------------------------------------------------------
-        // EXAMEN (Cámara + DialogFragment + Base de Datos)
-        // -------------------------------------------------------------
-        Button btnExamen = view.findViewById(R.id.btnExamenDialog);
-        if (btnExamen != null) {
-            btnExamen.setOnClickListener(v -> {
-                AnadirCursoDialogFrag dialog = new AnadirCursoDialogFrag();
-                dialog.setOnCursoAnadidoListener(nombreCurso -> {
-                    listaCursos.add(nombreCurso + " (En BD + Foto)");
-                    adapter.notifyDataSetChanged();
-                    lvCursos.smoothScrollToPosition(listaCursos.size() - 1);
-                });
-                dialog.show(getChildFragmentManager(), "AnadirCurso");
-            });
-        }
+
 
         btnAddCurso.setOnClickListener(v -> {
             String nuevoCurso = etNuevoCurso.getText().toString().trim();

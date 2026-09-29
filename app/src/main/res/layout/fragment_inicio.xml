@@ -42,14 +42,6 @@
             android:text="Añadir" />
     </LinearLayout>
 
-    <!-- EXAMEN: Botón de ejemplo de Dialog + Cámara + Base de datos -->
-    <Button
-        android:id="@+id/btnExamenDialog"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="[EXAMEN] Añadir Curso (Diálogo + Cámara + BD)"
-        android:layout_marginBottom="8dp"/>
-
     <ListView
         android:id="@+id/lvCursos"
         android:layout_width="match_parent"

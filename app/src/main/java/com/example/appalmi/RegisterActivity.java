@@ -58,16 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegistrarNuevo = findViewById(R.id.btnNuevoUsuario);
         btnUpdateUsuario = findViewById(R.id.btnUpdateUsuario);
 
-        Button btnExamen = findViewById(R.id.btnExamenDialog);
-        if (btnExamen != null) {
-            btnExamen.setOnClickListener(v -> {
-                com.example.appalmi.fragmentos.AnadirCursoDialogFrag dialog = new com.example.appalmi.fragmentos.AnadirCursoDialogFrag();
-                dialog.setOnCursoAnadidoListener(nombreCurso -> {
-                    // Refrescar u omitir, pero dejamos la estructura para copiar
-                });
-                dialog.show(getSupportFragmentManager(), "AnadirCurso");
-            });
-        }
+
         
         // Elementos del examen de Animaciones y Async
         btnLimpiarBD = findViewById(R.id.btnLimpiarBD);

@@ -91,16 +91,7 @@ public class FragmentMapa extends Fragment implements OnMapReadyCallback {
             btnBuscar.setOnClickListener(v -> buscarLugar());
         }
 
-        Button btnExamen = view.findViewById(R.id.btnExamenDialog);
-        if (btnExamen != null) {
-            btnExamen.setOnClickListener(v -> {
-                AnadirCursoDialogFrag dialog = new AnadirCursoDialogFrag();
-                dialog.setOnCursoAnadidoListener(nombreCurso -> {
-                    // Refrescar u omitir, pero dejamos la estructura para copiar
-                });
-                dialog.show(getChildFragmentManager(), "AnadirCurso");
-            });
-        }
+
 
         // --- SENSOR ---
         sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);

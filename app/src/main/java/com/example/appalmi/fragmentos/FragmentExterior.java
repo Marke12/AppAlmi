@@ -119,8 +119,6 @@ public class FragmentExterior extends Fragment {
         Button btnUrl = view.findViewById(R.id.btnUrlGaleria);
         if (btnUrl != null) btnUrl.setOnClickListener(v -> abrirDialogoUrl());
 
-        Button btnExamen = view.findViewById(R.id.btnExamenDialog);
-        if (btnExamen != null) btnExamen.setVisibility(View.GONE); // Oculto aquí
     }
 
     private void mostrarDialogoGuardarFoto(String rutaFoto) {
