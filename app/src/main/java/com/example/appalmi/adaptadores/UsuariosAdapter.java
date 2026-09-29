@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.appalmi.db.Usuario;
+import com.example.appalmi.modelos.Usuario;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -38,7 +38,7 @@ public class FragmentGaleria extends Fragment {
         GaleriaPagerAdapter adapter = new GaleriaPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
-        String[] titulos = {"Interior", "Exterior"};
+        String[] titulos = {"Interior", "Exterior", "Mis Fotos"};
 
         // Conecta las pestañas del TabLayout con las páginas del ViewPager2
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->

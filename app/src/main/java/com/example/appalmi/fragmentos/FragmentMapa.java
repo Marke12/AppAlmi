@@ -80,9 +80,6 @@ public class FragmentMapa extends Fragment implements OnMapReadyCallback {
 
         etBusqueda = view.findViewById(R.id.etBusquedaMapa);
 
-        // -------------------------------------------------------------
-        // EXAMEN (Manual "Voz" y "Sensores")
-        // -------------------------------------------------------------
         Button btnVoz = view.findViewById(R.id.btnVozMapa);
         if (btnVoz != null) {
             btnVoz.setOnClickListener(v -> invocarReconocimientoDeVoz());
@@ -92,6 +89,17 @@ public class FragmentMapa extends Fragment implements OnMapReadyCallback {
         Button btnBuscar = view.findViewById(R.id.btnBuscarMapa);
         if (btnBuscar != null) {
             btnBuscar.setOnClickListener(v -> buscarLugar());
+        }
+
+        Button btnExamen = view.findViewById(R.id.btnExamenDialog);
+        if (btnExamen != null) {
+            btnExamen.setOnClickListener(v -> {
+                AnadirCursoDialogFrag dialog = new AnadirCursoDialogFrag();
+                dialog.setOnCursoAnadidoListener(nombreCurso -> {
+                    // Refrescar u omitir, pero dejamos la estructura para copiar
+                });
+                dialog.show(getChildFragmentManager(), "AnadirCurso");
+            });
         }
 
         // --- SENSOR ---
@@ -115,7 +123,6 @@ public class FragmentMapa extends Fragment implements OnMapReadyCallback {
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) { }
         };
-        // -------------------------------------------------------------
 
         SupportMapFragment mapaFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.mvMapa);
@@ -144,16 +151,23 @@ public class FragmentMapa extends Fragment implements OnMapReadyCallback {
         String texto = etBusqueda.getText().toString();
         if (texto.isEmpty() || miMapa == null) return;
 
+        // La búsqueda por internet (Geocoder) DEBE hacerse en un hilo secundario
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             Geocoder geocoder = new Geocoder(requireContext());
             try {
+                // Buscamos 1 solo resultado
                 List<Address> resultados = geocoder.getFromLocationName(texto, 1);
+
                 requireActivity().runOnUiThread(() -> {
                     if (resultados != null && !resultados.isEmpty()) {
                         Address direccion = resultados.get(0);
                         LatLng nuevaPosicion = new LatLng(direccion.getLatitude(), direccion.getLongitude());
+
+                        // Limpiamos los marcadores viejos
                         miMapa.clear();
+                        
+                        // Añadimos el nuevo y movemos la cámara con animación
                         miMapa.addMarker(new MarkerOptions().position(nuevaPosicion).title(texto));
                         miMapa.animateCamera(CameraUpdateFactory.newLatLngZoom(nuevaPosicion, 15f));
                     } else {

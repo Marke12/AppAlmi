@@ -12,8 +12,10 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -28,6 +30,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appalmi.R;
 import com.example.appalmi.adaptadores.FotosAdapter;
+import com.example.appalmi.db.AppDatabase;
+import com.example.appalmi.db.AppExecutors;
+import com.example.appalmi.modelos.FotoEntity;
 import com.example.appalmi.modelos.Foto;
 
 import java.io.File;
@@ -43,8 +48,8 @@ import java.util.Locale;
 public class FragmentExterior extends Fragment {
 
     private RecyclerView rvFotos;
-    private List<Foto> fotos;
     private FotosAdapter adapter;
+    private AppDatabase mDb;
 
     // Variables para la cámara
     private File fotoActual;
@@ -60,11 +65,7 @@ public class FragmentExterior extends Fragment {
                 exito -> {
                     if (Boolean.TRUE.equals(exito) && fotoActual != null) {
                         guardarEnGaleria(fotoActual);
-
-                        Uri uriLocal = Uri.fromFile(fotoActual);
-                        fotos.add(0, new Foto(uriLocal.toString(), "Foto Exterior"));
-                        adapter.notifyItemInserted(0);
-                        rvFotos.scrollToPosition(0);
+                        mostrarDialogoGuardarFoto(fotoActual.getAbsolutePath());
                     }
                 });
 
@@ -90,24 +91,84 @@ public class FragmentExterior extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mDb = AppDatabase.getInstance(requireContext());
         rvFotos = view.findViewById(R.id.rvFotos);
         rvFotos.setLayoutManager(new GridLayoutManager(requireContext(), 3));
 
-        fotos = new ArrayList<>();
-        cargarFotosDesdeCarpeta(fotos);
-
-        fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnWGJYj4Ob4HJJwTI2zsyL7x9cXq-5c0z1o1chlDhywA&s=10", "Fachada"));
-        fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd6VxATDIWk6si0xi92AEZ90ycofiTZnASEqZlYmM61Q&s=10", "Llegada metro"));
-        fotos.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcToVnOx59zExrrPIpn0CdXD-DmVMrucxrN-uh0VcQV6EA&s=10", "Salida metro "));
-
-        adapter = new FotosAdapter(fotos);
+        adapter = new FotosAdapter(new ArrayList<>());
         rvFotos.setAdapter(adapter);
-        
+
+        // Cargamos automáticamente desde la BD mediante LiveData (observador) solo las "exterior"
+        mDb.fotoDao().obtenerFotosPorUbicacion("exterior").observe(getViewLifecycleOwner(), fotosDB -> {
+            List<Foto> listaActualizada = new ArrayList<>();
+            for (FotoEntity fe : fotosDB) {
+                listaActualizada.add(new Foto(fe.getRuta(), fe.getTitulo()));
+            }
+
+            // Fotos hardcodeadas de base para exterior
+            listaActualizada.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnWGJYj4Ob4HJJwTI2zsyL7x9cXq-5c0z1o1chlDhywA&s=10", "Fachada"));
+            listaActualizada.add(new Foto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd6VxATDIWk6si0xi92AEZ90ycofiTZnASEqZlYmM61Q&s=10", "Llegada metro"));
+
+            adapter = new FotosAdapter(listaActualizada);
+            rvFotos.setAdapter(adapter);
+        });
+
         Button btnCamara = view.findViewById(R.id.btnCamaraGaleria);
         if (btnCamara != null) btnCamara.setOnClickListener(v -> abrirCamara());
 
         Button btnUrl = view.findViewById(R.id.btnUrlGaleria);
         if (btnUrl != null) btnUrl.setOnClickListener(v -> abrirDialogoUrl());
+
+        Button btnExamen = view.findViewById(R.id.btnExamenDialog);
+        if (btnExamen != null) btnExamen.setVisibility(View.GONE); // Oculto aquí
+    }
+
+    private void mostrarDialogoGuardarFoto(String rutaFoto) {
+        View vistaDialog = getLayoutInflater().inflate(R.layout.dialog_add_curso_examen, null);
+        EditText etTitulo = vistaDialog.findViewById(R.id.etNombreCursoExamen);
+        etTitulo.setHint("Título de la foto");
+        vistaDialog.findViewById(R.id.btnSacarFotoCurso).setVisibility(View.GONE);
+        
+        android.widget.ImageView ivPreview = vistaDialog.findViewById(R.id.ivPreviewFotoCurso);
+        // USANDO GLIDE (Rúbrica Proyecto)
+        com.bumptech.glide.Glide.with(requireContext())
+                .load(Uri.fromFile(new File(rutaFoto)))
+                .centerCrop()
+                .into(ivPreview);
+
+        // Metemos un Spinner dinámico (desplegable)
+        Spinner spUbicacion = new Spinner(requireContext());
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, new String[]{"Interior", "Exterior", "Mis Fotos"});
+        spUbicacion.setAdapter(spinnerAdapter);
+        // Lo forzamos a Exterior por defecto
+        spUbicacion.setSelection(1);
+        ((ViewGroup) vistaDialog).addView(spUbicacion, 1);
+
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Guardar Foto")
+                .setView(vistaDialog)
+                .create();
+
+        vistaDialog.findViewById(R.id.btnGuardarCursoExamen).setOnClickListener(v -> {
+            String titulo = etTitulo.getText().toString();
+            String ubi = spUbicacion.getSelectedItem().toString().toLowerCase();
+
+            if (titulo.isEmpty()) {
+                Toast.makeText(requireContext(), "Pon un título", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            AppExecutors.getInstance().getDiskIO().execute(() -> {
+                mDb.fotoDao().insertar(new FotoEntity(Uri.fromFile(new File(rutaFoto)).toString(), titulo, ubi));
+                AppExecutors.getInstance().getMainThread().execute(() -> {
+                    Toast.makeText(requireContext(), "Foto guardada en " + ubi, Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                });
+            });
+        });
+
+        vistaDialog.findViewById(R.id.btnCancelarCursoExamen).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 
     private void abrirCamara() {
@@ -160,36 +221,41 @@ public class FragmentExterior extends Fragment {
     }
 
     private void abrirDialogoUrl() {
-        EditText inputUrl = new EditText(requireContext());
-        inputUrl.setHint("Pega aquí el enlace a la imagen (http...)");
+        View vistaDialog = getLayoutInflater().inflate(R.layout.dialog_add_curso_examen, null);
+        EditText etUrl = vistaDialog.findViewById(R.id.etNombreCursoExamen);
+        etUrl.setHint("Pega aquí el enlace (http...)");
+        vistaDialog.findViewById(R.id.btnSacarFotoCurso).setVisibility(View.GONE);
+        vistaDialog.findViewById(R.id.ivPreviewFotoCurso).setVisibility(View.GONE);
 
-        new AlertDialog.Builder(requireContext())
-                .setTitle("Añadir Foto Exterior desde Internet")
-                .setView(inputUrl)
-                .setPositiveButton("Añadir", (dialog, which) -> {
-                    String urlStr = inputUrl.getText().toString();
-                    if (!urlStr.isEmpty()) {
-                        fotos.add(0, new Foto(urlStr, "Foto Internet"));
-                        adapter.notifyItemInserted(0);
-                        rvFotos.scrollToPosition(0);
-                    }
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
-    }
+        Spinner spUbicacion = new Spinner(requireContext());
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, new String[]{"Interior", "Exterior", "Mis Fotos"});
+        spUbicacion.setAdapter(spinnerAdapter);
+        spUbicacion.setSelection(1);
+        ((ViewGroup) vistaDialog).addView(spUbicacion, 1); 
+        
+        EditText etTitulo = new EditText(requireContext());
+        etTitulo.setHint("Título de la foto");
+        ((ViewGroup) vistaDialog).addView(etTitulo, 2);
 
-    private void cargarFotosDesdeCarpeta(List<Foto> lista) {
-        File carpeta = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        if (carpeta != null) {
-            File[] archivos = carpeta.listFiles();
-            if (archivos != null) {
-                for (File archivo : archivos) {
-                    if (archivo.getName().startsWith("foto_ext_")) {
-                        Uri uriLocal = Uri.fromFile(archivo);
-                        lista.add(new Foto(uriLocal.toString(), "Foto Propia Exterior"));
-                    }
-                }
-            }
-        }
+        AlertDialog dialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Añadir Foto Internet")
+                .setView(vistaDialog)
+                .create();
+
+        vistaDialog.findViewById(R.id.btnGuardarCursoExamen).setOnClickListener(v -> {
+            String url = etUrl.getText().toString();
+            String titulo = etTitulo.getText().toString();
+            String ubi = spUbicacion.getSelectedItem().toString().toLowerCase();
+
+            if (url.isEmpty() || titulo.isEmpty()) return;
+
+            AppExecutors.getInstance().getDiskIO().execute(() -> {
+                mDb.fotoDao().insertar(new FotoEntity(url, titulo, ubi));
+                AppExecutors.getInstance().getMainThread().execute(dialog::dismiss);
+            });
+        });
+
+        vistaDialog.findViewById(R.id.btnCancelarCursoExamen).setOnClickListener(v -> dialog.dismiss());
+        dialog.show();
     }
 }

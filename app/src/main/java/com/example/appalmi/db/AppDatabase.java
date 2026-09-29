@@ -8,13 +8,21 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Usuario.class}, version = 1, exportSchema = false)
+import com.example.appalmi.modelos.Alumno;
+import com.example.appalmi.modelos.Curso;
+import com.example.appalmi.modelos.FotoEntity;
+import com.example.appalmi.modelos.Usuario;
+
+@Database(entities = {Usuario.class, Curso.class, FotoEntity.class, Alumno.class}, version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final String DATABASE_NAME = "UsuariosBD";
     private static volatile AppDatabase sInstance;
 
     public abstract UsuarioDao usuarioDao();
+    public abstract CursoDao cursoDao();
+    public abstract FotoDao fotoDao();
+    public abstract AlumnoDao alumnoDao();
 
     public static AppDatabase getInstance(Context context) {
         if (sInstance == null) {

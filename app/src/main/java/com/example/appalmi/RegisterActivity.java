@@ -24,7 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.appalmi.adaptadores.UsuariosAdapter;
 import com.example.appalmi.db.AppDatabase;
 import com.example.appalmi.db.AppExecutors;
-import com.example.appalmi.db.Usuario;
+import com.example.appalmi.modelos.Usuario;
 
 public class RegisterActivity extends AppCompatActivity {
     private ListView lvUsers;
@@ -57,6 +57,17 @@ public class RegisterActivity extends AppCompatActivity {
         etRePassword = findViewById(R.id.etRegistroRePassword);
         btnRegistrarNuevo = findViewById(R.id.btnNuevoUsuario);
         btnUpdateUsuario = findViewById(R.id.btnUpdateUsuario);
+
+        Button btnExamen = findViewById(R.id.btnExamenDialog);
+        if (btnExamen != null) {
+            btnExamen.setOnClickListener(v -> {
+                com.example.appalmi.fragmentos.AnadirCursoDialogFrag dialog = new com.example.appalmi.fragmentos.AnadirCursoDialogFrag();
+                dialog.setOnCursoAnadidoListener(nombreCurso -> {
+                    // Refrescar u omitir, pero dejamos la estructura para copiar
+                });
+                dialog.show(getSupportFragmentManager(), "AnadirCurso");
+            });
+        }
         
         // Elementos del examen de Animaciones y Async
         btnLimpiarBD = findViewById(R.id.btnLimpiarBD);
@@ -111,7 +122,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         // -------------------------------------------------------------
-        // EXAMEN (Manual "Sensores") 
+        // EXAMEN (Manual "Sensores")
         // -------------------------------------------------------------
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager != null) {

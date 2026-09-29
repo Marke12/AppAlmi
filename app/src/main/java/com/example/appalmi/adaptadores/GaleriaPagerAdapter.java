@@ -18,13 +18,15 @@ public class GaleriaPagerAdapter extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         if (position == 0) {
             return new FragmentInterior();
-        } else {
+        } else if (position == 1) {
             return new FragmentExterior();
+        } else {
+            return new com.example.appalmi.fragmentos.FragmentMisFotos();
         }
     }
 
     @Override
     public int getItemCount() {
-        return 2;
+        return 3;
     }
 }

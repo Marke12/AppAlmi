@@ -1,4 +1,4 @@
-package com.example.appalmi.db;
+package com.example.appalmi.modelos;
 
 import androidx.room.Entity;
 import androidx.room.Ignore;

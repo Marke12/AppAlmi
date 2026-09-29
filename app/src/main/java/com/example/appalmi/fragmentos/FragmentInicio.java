@@ -50,6 +50,22 @@ public class FragmentInicio extends Fragment {
         adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, listaCursos);
         lvCursos.setAdapter(adapter);
 
+        // -------------------------------------------------------------
+        // EXAMEN (Cámara + DialogFragment + Base de Datos)
+        // -------------------------------------------------------------
+        Button btnExamen = view.findViewById(R.id.btnExamenDialog);
+        if (btnExamen != null) {
+            btnExamen.setOnClickListener(v -> {
+                AnadirCursoDialogFrag dialog = new AnadirCursoDialogFrag();
+                dialog.setOnCursoAnadidoListener(nombreCurso -> {
+                    listaCursos.add(nombreCurso + " (En BD + Foto)");
+                    adapter.notifyDataSetChanged();
+                    lvCursos.smoothScrollToPosition(listaCursos.size() - 1);
+                });
+                dialog.show(getChildFragmentManager(), "AnadirCurso");
+            });
+        }
+
         btnAddCurso.setOnClickListener(v -> {
             String nuevoCurso = etNuevoCurso.getText().toString().trim();
             if (!nuevoCurso.isEmpty()) {
@@ -64,8 +80,10 @@ public class FragmentInicio extends Fragment {
 
         lvCursos.setOnItemClickListener((parent, view1, position, id) -> {
             long tiempoActual = System.currentTimeMillis();
+            String cursoSeleccionado = listaCursos.get(position);
+
             if (ultimaPosicionClick == position && (tiempoActual - ultimoTiempoClick) < TIEMPO_DOBLE_CLICK) {
-                String cursoSeleccionado = listaCursos.get(position);
+                // Doble clic: Borrar
                 new android.app.AlertDialog.Builder(requireContext())
                         .setTitle("Borrar curso")
                         .setMessage("¿Estás seguro de que quieres borrar el curso '" + cursoSeleccionado + "'?")
@@ -79,8 +97,16 @@ public class FragmentInicio extends Fragment {
                 ultimoTiempoClick = 0;
                 ultimaPosicionClick = -1;
             } else {
+                // Primer clic: Mostrar la nueva pantalla de Alumnos
                 ultimoTiempoClick = tiempoActual;
                 ultimaPosicionClick = position;
+                
+                // Navegar al Fragmento de Alumnos
+                requireActivity().getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
+                        .replace(R.id.contenedorFragmentos, FragmentAlumnos.newInstance(cursoSeleccionado))
+                        .addToBackStack(null) // Para poder volver atrás con el botón físico del móvil
+                        .commit();
             }
         });
     }

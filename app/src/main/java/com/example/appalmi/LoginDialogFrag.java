@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.example.appalmi.db.AppDatabase;
 import com.example.appalmi.db.AppExecutors;
-import com.example.appalmi.db.Usuario;
+import com.example.appalmi.modelos.Usuario;
 
 public class LoginDialogFrag extends DialogFragment {
 

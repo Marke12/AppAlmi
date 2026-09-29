@@ -45,6 +45,7 @@ public class CentralActivity extends AppCompatActivity {
         if (id == R.id.menuInicio) cargarFragmento(new FragmentInicio());
         else if (id == R.id.menuMapa) cargarFragmento(new FragmentMapa());
         else if (id == R.id.menuGaleria) cargarFragmento(new FragmentGaleria());
+        else if (id == R.id.menuSensores) cargarFragmento(new com.example.appalmi.fragmentos.FragmentSensores());
 
         item.setChecked(true);
         drawerLayout.closeDrawers();

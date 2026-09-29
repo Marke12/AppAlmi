@@ -35,7 +35,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDxoWthvyCUU7Rpxu8_rVHuCmxA3G_nt8U" />
 
-        <!-- La pantalla de bienvenida de la APP (Launcher) -->
+        <!-- El LoginActivity (EXAMEN) - Comentado su Intent-Filter para que no sea la principal -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -46,14 +46,14 @@
             </intent-filter>
         </activity>
 
-        <!-- El interior de la APP -->
+        <!-- El interior de la APP (PROYECTO 10/10) - Ahora es la principal -->
         <activity
             android:name=".CentralActivity"
-            android:exported="false"
+            android:exported="true"
             android:windowSoftInputMode="adjustResize">
         </activity>
 
-        <!-- Actividad de Registro -->
+        <!-- Actividad de Registro (EXAMEN) -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
