@@ -1,100 +1,80 @@
 # 🆘 CHULETA OFFLINE DE EXAMEN (Ctrl+F) 🆘
 
-*Esta guía rápida está pensada para que, en mitad del examen (sin internet), la abras en Android Studio, busques qué te están pidiendo en el enunciado, y sepas en qué archivo exacto de tu proyecto tienes que hacer Copiar/Pegar.*
+*Esta guía rápida está pensada para que, en mitad del examen (sin internet), sepas dónde encontrar dentro de este mismo proyecto el código para resolver cualquier funcionalidad extra que te pidan implementar sobre el proyecto base original de "App-Almi".*
 
 ---
 
-## 💾 1. "Añadir una tabla a la Base de Datos" (Room / SQLite)
-Si te piden que crees una nueva entidad en la base de datos (ej: "Aulas", "Notas", "Profesores").
+## 🛠️ ¿DÓNDE ESTÁ EL CÓDIGO QUE NECESITO RECICLAR?
 
-1.  **Copiar Plantilla de Entidad:** Ve a `db/Curso.java` (o `Alumno.java` si tiene muchos campos). Cópialo, pégalo y cámbiale el nombre a tu nueva tabla. Cambia las variables. **No olvides generar los Getters y Setters**.
-2.  **Copiar Plantilla de Consultas:** Ve a `db/CursoDao.java`. Cópialo, cámbiale el nombre y ajusta el `@Query("SELECT * FROM ...")` y el `@Insert`.
-3.  **Registrarla en la BD (¡CRÍTICO!):** Ve a `db/AppDatabase.java`.
-    *   Añade tu clase en la cabecera: `@Database(entities = {Usuario.class, Curso.class, TuClaseNueva.class}, version = 5)`
-    *   **Acuérdate de cambiar el número de versión** (ej: de 4 a 5) para que actúe el `.fallbackToDestructiveMigration()`.
-    *   Declara tu Dao dentro: `public abstract TuNuevoDao tuNuevoDao();`.
+Como el proyecto original solo exigía (Menú Lateral, ListView, Animaciones, Tabs, Mapa y Glide con RecyclerView), todas las funcionalidades "avanzadas" que caen en el examen las hemos implementado a lo largo del código. **Búscalas aquí:**
 
-## 📸 2. "Que se abra la cámara y guarde la foto"
-Si te piden poner un botón que abra la cámara nativa del móvil. Tienes el modelo perfecto y aislado en `DialogAddAlumnoFrag.java` o en `FragmentInterior.java`.
+### 1. La Cámara y Guardar Fotos (MediaStore + FileProvider)
+Si te piden sacar una foto, guardarla físicamente en el móvil y mostrarla en la pantalla.
+*   **¿Dónde tienes un ejemplo funcionando?**: En `FragmentMisFotos.java` (botón "Sacar Foto") o en `DialogAddAlumnoFrag.java`.
+*   **¿Qué necesitas copiar?**:
+    1.  Las variables globales: `private File fotoActual;` y el `tomarFotoLauncher`.
+    2.  El bloque del `tomarFotoLauncher` que va en el `onCreate()`. **OJO**: Fíjate cómo usa Glide cargando con `Uri.fromFile(fotoActual)` para que no salga en gris.
+    3.  El método `lanzarCamara()`.
+    4.  *(Opcional)* Si te piden guardar la foto en la galería oficial de Android, tienes el método `guardarEnGaleria(File archivo)` en `FragmentMisFotos.java`.
 
-**Qué debes copiar a tu nueva Actividad/Fragmento:**
-1.  **Las variables globales:**
-    `private File fotoActual;`
-    `private ActivityResultLauncher<Uri> tomarFotoLauncher;`
-2.  **El Registro del Launcher (Pegar en el `onCreate`):**
-    Copia el bloque `tomarFotoLauncher = registerForActivityResult(...)`. **Aquí es donde se ejecuta la respuesta exitosa de la foto**.
-3.  **El método de Apertura:**
-    Copia el método `private void lanzarCamara()`.
-4.  **Si piden mostrar la foto en miniatura:**
-    Acuérdate de usar Glide (la rúbrica lo exige).
-    ```java
-    Glide.with(requireContext()).load(fotoActual).centerCrop().into(tuImageView);
-    ```
+### 2. Base de Datos SQLite (Room)
+Si te piden crear una tabla nueva para persistir datos (ej. "Aulas", "Notas", "Profesores") o guardar favoritos.
+*   **¿Dónde tienes un ejemplo funcionando?**: En la carpeta `db/`. Tienes 4 tablas de ejemplo: `Usuario`, `Curso`, `Alumno`, `FotoEntity`.
+*   **Pasos a seguir:**
+    1.  **Crea la Entidad:** Copia `Curso.java`, pégalo con otro nombre, cambia sus variables y general los Getters/Setters.
+    2.  **Crea el Dao:** Copia `CursoDao.java` y adapta sus consultas (`@Insert`, `@Query`).
+    3.  **Actualiza AppDatabase (¡CRÍTICO!):** Añade tu nueva tabla a `@Database(entities = {..., TuClase.class}, version = X)`. **IMPORTANTE**: Suma +1 al número de versión (ej. de 4 a 5) para que no crashee por culpa de una migración faltante. Room borrará todo automáticamente gracias a `.fallbackToDestructiveMigration()`.
+*   **¿Cómo ejecuto las consultas?**: Usando el hilo secundario (NUNCA en el principal): `AppExecutors.getInstance().getDiskIO().execute(() -> { ... });` (Mira cómo se usa en `RegisterActivity` o `DialogAddAlumnoFrag`).
 
-## ⏱️ 3. "Simular una carga" (Hilos Asíncronos / ProgressBar)
-Si te piden que una acción no sea instantánea, sino que bloquee la pantalla con una barra de progreso que va subiendo.
+### 3. Sensores del Teléfono
+Si te piden que al interactuar físicamente con el móvil ocurra algo.
+*   **¿Dónde tienes un ejemplo funcionando?**: En `FragmentSensores.java`.
+*   **¿Qué necesitas copiar?**:
+    1.  Variables: `SensorManager` y el `Sensor` (ej. `proximitySensor` o `lightSensor`).
+    2.  Asignar el sensor en el `onViewCreated` usando `getSystemService`.
+    3.  Copiar el método gigante `@Override public void onSensorChanged(SensorEvent event)`.
+    4.  **¡Cuidado!** Para que la batería no se muera, DEBES copiar también el `onResume` (que arranca el sensor) y el `onPause` (que lo apaga).
 
-1.  Ve a `RegisterActivity.java` y busca el método `animarYBorrar()`.
-2.  **La estructura obligatoria:**
-    ```java
-    // 1. Ir al Hilo Secundario (NO bloquea la pantalla)
-    AppExecutors.getInstance().getDiskIO().execute(() -> {
-        
-        try {
-            for (int i = 1; i <= 10; i++) {
-                Thread.sleep(200); // 2. Simulamos el trabajo pesado (Descarga/Cálculo)
-                int progreso = i * 10;
-                
-                // 3. Volver al Hilo Principal (SÍ puede tocar la UI / Pantalla)
-                AppExecutors.getInstance().getMainThread().execute(() -> {
-                    miProgressBar.setProgress(progreso);
-                });
-            }
-        } catch (InterruptedException e) { }
-        
-        // 4. Volver al Hilo Principal para el resultado final
-        AppExecutors.getInstance().getMainThread().execute(() -> {
-            Toast.makeText(contexto, "Terminado", Toast.LENGTH_SHORT).show();
-        });
-    });
-    ```
+### 4. Cuadros de Diálogo Emergentes (Dialogs Interactivos)
+Si te piden que en vez de abrir otra pantalla, salte un cuadro preguntando datos o confirmaciones.
+*   **Modelo Básico (Solo Confirmar "Sí/No"):** Lo tienes en `FragmentAlumnos.java` (el `AlertDialog` que sale al borrar un alumno haciendo click largo).
+*   **Modelo Avanzado (Con Cajas de Texto y Botones):** Lo tienes en `DialogAddAlumnoFrag.java` o `DialogEditAlumnoFrag.java`. Se hace creando una clase separada que herede de `DialogFragment` y que infle su propio layout XML (ej. `dialog_add_alumno.xml`).
 
-## 👆 4. "Pasar datos a un Cuadro de Diálogo emergente"
-Si te piden que al tocar un elemento de un ListView se abra una ventanita para **Editarlo**.
+### 5. Reconocimiento de Voz y Búsqueda de Localizaciones (Geocoder)
+Si te piden que la app escuche tu voz o busque una calle para ponerla en el mapa.
+*   **¿Dónde tienes un ejemplo funcionando?**: En `FragmentMapa.java`.
+*   **Reconocimiento de voz:** Copia el `vozLauncher` (que va en el `onCreate`) y el método `invocarReconocimientoDeVoz()`.
+*   **Buscar calle (Geocoder):** Tienes el método `buscarLugar()`. ¡Fíjate que está envuelto en un `ExecutorService` para no congelar la pantalla porque necesita acceso a internet!
 
-1.  El modelo a seguir es `DialogEditAlumnoFrag.java`.
-2.  **El truco:** Crea un **Constructor** en el diálogo que reciba el objeto (ej: `public DialogEditAlumnoFrag(Alumno alumno)`).
-3.  En el `onViewCreated` del diálogo, usa los datos de ese objeto para rellenar los `EditText` automáticamente (`etNombre.setText(alumnoActual.getNombre())`).
-4.  Al darle a guardar, manda la orden a la base de datos de Room: `mDb.alumnoDao().actualizar(alumnoActual)`.
-
-## 📳 5. "El botón se mueve / Tiembla" (Animaciones ObjectAnimator)
-Si te piden animación de mover (Translation) o desvanecer (Alpha) al interactuar con algo.
-
-1.  Ve a `RegisterActivity.java` y busca el método `animarYBorrar()`.
-2.  Copia y adapta este fragmento:
-    ```java
-    PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat(View.TRANSLATION_X, 0f, 20f, -20f, 0f);
-    ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(miBotonODialogo, pvhX);
-    animator.setDuration(500); 
-    animator.start();
-    ```
-
-## 👁️ 6. "Borrar el texto si paso la mano" (Sensor de Proximidad)
-1.  Ve a `FragmentSensores.java` o `RegisterActivity.java`.
-2.  **Qué debes copiar:**
-    *   Variables: `SensorManager` y `Sensor`.
-    *   Inicialización en `onCreate` / `onViewCreated`: `getSystemService(Context.SENSOR_SERVICE)`.
-    *   El escuchador: `SensorEventListener` (Aquí pones tu `if` comparando con `getMaximumRange()`).
-    *   **¡Vital!**: Los métodos `@Override onResume()` y `@Override onPause()` para encender y apagar el sensor.
-
-## 🎤 7. "Búsqueda por Voz o Geocoder" (¡Cuidado, es Offline!)
-*   Si te lo piden sabiendo que no va a ir, ve a `FragmentMapa.java`.
-*   Para voz: Copia el `vozLauncher` y el método `invocarReconocimientoDeVoz()`. Usa `RecognizerIntent`.
-*   Para Geocoder (Buscar lugar por texto): Copia el método `buscarLugar()`. **¡RECUERDA!** Tiene que ir dentro de un `ExecutorService` o `AppExecutors.getDiskIO()` o la app explotará al intentar acceder a la red en el hilo principal.
+### 6. Animaciones Asíncronas y Temblores
+Si te piden animar botones o poner una barra de progreso de carga antes de hacer algo.
+*   **¿Dónde tienes un ejemplo funcionando?**: En `RegisterActivity.java`, en el método `animarYBorrar()`.
+*   Aprende cómo usa `ObjectAnimator` para desplazar (`TRANSLATION_X`) el botón y cómo abre un bucle `for` en un hilo secundario y hace "saltos" hacia el hilo principal (`AppExecutors.getInstance().getMainThread().execute`) para ir llenando el `ProgressBar`.
 
 ---
-**🏆 REGLA DE ORO DEL EXAMEN:** 
-Si la app se te cierra de golpe al pulsar un botón y en el Logcat lees algo de **"Only the original thread..."**, significa que has intentado cambiar un texto o una foto estando dentro de la Base de Datos. Pega tu código de cambiar la foto/texto dentro de un bloque `AppExecutors.getInstance().getMainThread().execute(() -> { ... });` y se solucionará.
+
+## ✂️ GUÍA RÁPIDA DE MODIFICACIÓN DE LA UI DEL PROYECTO
+El examen suele pedir alteraciones estructurales de lo que ya entregaste.
+
+### 1. "Añade una nueva opción al Menú Lateral (Navigation Drawer)"
+1. Ve a `res/menu/nav_menu.xml` y copia un `<item>` existente. Ponle un nuevo ID (ej. `@+id/menuNuevo`) y un Título.
+2. Ve a `CentralActivity.java`, baja al método `onMenuItemClick`.
+3. Añade la condición: `else if (id == R.id.menuNuevo) cargarFragmento(new TuNuevoFragmento());`
+
+### 2. "Añade una nueva Pestaña (Tab) a la Galería"
+1. Ve a `FragmentGaleria.java`, busca el array `String[] titulos = {"Interior", "Exterior", "Mis Fotos"}` y añade un cuarto título al final.
+2. Ve a `adaptadores/GaleriaPagerAdapter.java`. 
+3. En `getItemCount()`, cambia el `return 3;` a `return 4;`.
+4. En `createFragment()`, añade un `else if (position == 3) { return new TuNuevoFragmento(); }`.
+
+### 3. "Al hacer clic largo en la lista (ListView/RecyclerView)..."
+*   **Para ListView:** (Portada de Cursos): Copia el bloque `lvCursos.setOnItemLongClickListener(...)` que hay comentado dentro de `RegisterActivity`.
+*   **Para RecyclerView:** Tienes que tocar el archivo del adaptador (Ej. `AlumnosAdapter.java`), irte abajo del todo a la función `onBindViewHolder` y ponerle al `holder.itemView.setOnLongClickListener(...)`.
+
+### 4. "Haz que la App arranque directamente en el Registro"
+1. Abre `AndroidManifest.xml`.
+2. Busca la etiqueta `<intent-filter>` (la que tiene `android.intent.action.MAIN` y `LAUNCHER`).
+3. Córtala entera (Ctrl+X) de donde esté (actualmente en `CentralActivity`), y pégala (Ctrl+V) **dentro** de la etiqueta de la actividad donde quieras que arranque.
 
 ---
 
@@ -119,13 +99,20 @@ Muchos métodos como los `Toast`, los `AlertDialog` o los `Adapters` te van a pe
 ### 4. "¡Mi código crashea y no sé por qué!" (Uso del Logcat sin internet)
 En un examen sin StackOverflow, tu única salvación es la pestaña **Logcat** de abajo.
 1. Abre el Logcat.
-2. Si está lleno de basura, límpialo (icono de la papelera) justo antes de darle al botón de la app que hace que crashee.
+2. Límpialo (icono de la papelera) justo antes de darle al botón de la app que hace que crashee.
 3. Toca el botón y busca la frase que empiece por `FATAL EXCEPTION`.
 4. Busca las líneas azules. La **primera línea azul** que ponga "com.example.appalmi..." es exactamente el archivo y la línea de código donde está el error. Haz clic en lo azul y te llevará directo.
 
 ### 5. "El Gradle no me compila tras copiar cosas"
-Si has tocado el `AndroidManifest.xml` (por ejemplo copiando el `FileProvider` o moviendo el `Intent-Filter` del Launcher) o el `build.gradle`, y al darle al Play te da error rojo:
+Si has tocado el `AndroidManifest.xml` o copiado un archivo con un nombre mal puesto y al darle al Play te da error rojo de compilación:
 *   Vete arriba a la barra de menú de Android Studio.
 *   Dale a **Build > Clean Project**.
 *   Cuando termine, dale a **Build > Rebuild Project**.
 *   Esto borra los archivos temporales viejos y fuerza a Android Studio a leer tu código desde cero sin errores fantasma.
+
+### 6. "¡He borrado/roto algo sin querer!" (Salvavidas Offline)
+Si por nervios borras una clase o rompes un código que funcionaba:
+**NO ENTRES EN PÁNICO Y NO INTENTES REHACERLO DE MEMORIA.**
+1. Haz clic derecho en el archivo (o en la carpeta app si lo has borrado entero).
+2. Selecciona **Local History -> Show History**.
+3. Android Studio guarda todo offline minuto a minuto. Busca la versión de hace 10 minutos y dale al botón **Revert** (una flecha azul).
